@@ -1,4 +1,4 @@
-import os, time, re, sys
+import os, time, re, sys, random
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
@@ -38,9 +38,9 @@ def login():
 
     # to check whether a user has successfully signed-in
     handle_alert(is_login=True)
-    is_logged_in = True
 
     # get prev_point as an "Int" obj
+    global prev_point
     prev_point = get_point()
     print("prev_point:\t", prev_point)
 
@@ -58,7 +58,7 @@ def main_banner():
     driver.get("https://quasarzone.com/bbs/qn_partner")
     ads_clicked = []
     count = 1
-    for _ in range(20):
+    for _ in range(random.randint(10, 25)):
         try:
             # page refresh to get another main banner advertisement
             driver.refresh()
@@ -78,11 +78,8 @@ def main_banner():
             ads_clicked.append(hashed_link)
             print("Found main ad!")
             main_ad.click()
-            driver.implicitly_wait(3)
-            driver.switch_to.window("main_tab")
-            driver.implicitly_wait(3)
-            handle_alert()
-            time.sleep(1)
+            handle_alert_with_sleep()
+
         except NoSuchElementException:
             print("Google AdSence has found, skip this page")
 
@@ -96,10 +93,7 @@ def hot_deal_ads():
 
     for elem in ad_elements:
         elem.click()
-        driver.implicitly_wait(5)
-        driver.switch_to.window("main_tab")
-        handle_alert()
-        time.sleep(2)
+        handle_alert_with_sleep()
 
 
 # build your PC page - sponsor ads (10pt each)
@@ -108,15 +102,15 @@ def build_pc_ads():
     sponsor_elems = driver.find_elements(by=By.CSS_SELECTOR, value=".sponsor-logo > a")
     for elem in sponsor_elems:
         elem.click()
-        driver.implicitly_wait(3)
-        driver.switch_to.window("main_tab")
-        driver.implicitly_wait(3)
-        handle_alert()
-        time.sleep(1)
+        handle_alert_with_sleep()
 
 
 # calculate points earned during this session then perform sign-out
 def logout():
+    # go to the main page
+    driver.get("https://quasarzone.com")
+    driver.implicitly_wait(3)
+
     # check if a user has signed-in
     try:
         logout_btn = driver.find_element(by=By.CLASS_NAME, value="logout-bt")
@@ -124,20 +118,16 @@ def logout():
         print("You have not signed-in yet")
         sys.exit(3)
 
-    # go to the main page
-    driver.get("https://quasarzone.com")
-    driver.implicitly_wait(3)
-
     # calculate points earned during the session
-    if is_logged_in is True:
-        current_point = get_point()
-        print("current_point:\t", current_point)
-        print(f"You earned {current_point - prev_point} pt!😁")
+    global prev_point
+    current_point = get_point()
+    print("current_point:\t", current_point)
+    print(f"You earned {current_point - prev_point} pt!😁")
 
     # perform sign-out
     logout_btn.click()
     driver.implicitly_wait(3)
-    time.sleep(3)
+    time.sleep(1)
 
 
 # handle alert window to accept
@@ -156,6 +146,20 @@ def handle_alert(is_login=False):
             print("Alert window has successfully closed")
     except TimeoutException as err:
         print("No alert window has found", err)
+
+
+# handle_alert() to dealw with tab switching and page loading
+def handle_alert_with_sleep():
+    handle_alert()
+    driver.implicitly_wait(5)
+    time.sleep(3)
+    driver.switch_to.window("main_tab")
+    driver.implicitly_wait(3)
+    time.sleep(2)
+    handle_alert()
+    driver.implicitly_wait(3)
+    time.sleep(3)
+    driver.implicitly_wait(3)
 
 
 # return Quasarzone point as an Int
@@ -177,7 +181,6 @@ if __name__ == "__main__":
     # get id and password from environment variables
     ID = os.environ["quasarzone_id"]
     PASSWORD = os.environ["quasarzone_password"]
-    is_logged_in = False
 
     options = webdriver.ChromeOptions()
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
