@@ -11,13 +11,14 @@ from selenium.common.exceptions import (
     ElementNotSelectableException,
     NoSuchElementException,
     TimeoutException,
+    UnexpectedAlertPresentException,
 )
 
 # automation processes of Quasarzone point mining
 def main():
     login()  # 사이트 로그인 (10pt)
-    attendance_check()  # 오전 9시 이후 출석체크 (10-30pt)
     main_banner()  #  메인 페이지 대형 사이드 배너(10pt)
+    attendance_check()  # 오전 9시 이후 출석체크 (10-30pt)
     hot_deal_ads()  # 지름/할인정보 우측하단 배너(0-3pt)
     build_pc_ads()  # PC조립/견적 배너(10pt)
     logout()
@@ -49,11 +50,11 @@ def login():
 def attendance_check():
     driver.get("https://quasarzone.com/users/attendance/")
     driver.execute_script("anttendanceCheck();")
-    driver.implicitly_wait(3)
     handle_alert()
 
 
 # main banner ads (10pt each)
+# need to figure out why automatic alert close does not work properly sometimes
 def main_banner():
     driver.get("https://quasarzone.com/bbs/qn_partner")
     ads_clicked = []
@@ -77,11 +78,22 @@ def main_banner():
                 continue
             ads_clicked.append(hashed_link)
             print("Found main ad!")
-            main_ad.click()
-            handle_alert_with_sleep()
 
         except NoSuchElementException:
             print("Google AdSence has found, skip this page")
+            continue
+
+        try:
+            main_ad.click()
+            driver.implicitly_wait(7)
+            driver.switch_to.window("main_tab")
+            handle_alert()
+            time.sleep(0.5)
+
+        except UnexpectedAlertPresentException:
+            print("Ahhhhhh!! please close the alert manually")
+            driver.implicitly_wait(3)
+            time.sleep(1)
 
 
 # hot deals ads (0 to 3 pt each)
@@ -93,7 +105,10 @@ def hot_deal_ads():
 
     for elem in ad_elements:
         elem.click()
-        handle_alert_with_sleep()
+        driver.implicitly_wait(12)
+        driver.switch_to.window("main_tab")
+        handle_alert()
+        time.sleep(0.5)
 
 
 # build your PC page - sponsor ads (10pt each)
@@ -102,7 +117,10 @@ def build_pc_ads():
     sponsor_elems = driver.find_elements(by=By.CSS_SELECTOR, value=".sponsor-logo > a")
     for elem in sponsor_elems:
         elem.click()
-        handle_alert_with_sleep()
+        driver.implicitly_wait(7)
+        driver.switch_to.window("main_tab")
+        handle_alert()
+        time.sleep(0.5)
 
 
 # calculate points earned during this session then perform sign-out
@@ -133,7 +151,7 @@ def logout():
 # handle alert window to accept
 def handle_alert(is_login=False):
     try:
-        WebDriverWait(driver, 5).until(
+        WebDriverWait(driver, 3).until(
             expected_conditions.alert_is_present(),
             "Timed out waiting for simple alert to appear",
         )
@@ -146,20 +164,6 @@ def handle_alert(is_login=False):
             print("Alert window has successfully closed")
     except TimeoutException as err:
         print("No alert window has found", err)
-
-
-# handle_alert() to dealw with tab switching and page loading
-def handle_alert_with_sleep():
-    handle_alert()
-    driver.implicitly_wait(5)
-    time.sleep(3)
-    driver.switch_to.window("main_tab")
-    driver.implicitly_wait(3)
-    time.sleep(2)
-    handle_alert()
-    driver.implicitly_wait(3)
-    time.sleep(3)
-    driver.implicitly_wait(3)
 
 
 # return Quasarzone point as an Int
@@ -183,6 +187,7 @@ if __name__ == "__main__":
     PASSWORD = os.environ["quasarzone_password"]
 
     options = webdriver.ChromeOptions()
+
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option("useAutomationExtension", False)
 
