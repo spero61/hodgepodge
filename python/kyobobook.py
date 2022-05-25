@@ -89,10 +89,8 @@ submit_btn.click()
 driver.implicitly_wait(3)
 handle_alert()
 
-logout_btn = driver.find_element(
-    by=By.CSS_SELECTOR, value="#gnbLoginInfoList > li.button > a"
-)
-logout_btn.click()
+driver.execute_script("logout();")
 driver.implicitly_wait(3)
 
+print("successfully signed-out!")
 driver.quit()
