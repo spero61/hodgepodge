@@ -14,11 +14,19 @@ from selenium.common.exceptions import (
     UnexpectedAlertPresentException,
 )
 
+seconds = time.time()
+local_time = time.ctime(seconds)
+named_tuple = time.localtime()
+# convert localtime to time_string to normalize the time format
+time_string = time.strftime("%Y-%m-%d, %H:%M:%S", named_tuple)
+hour = int(f"{time_string[12]}{time_string[13]}")
+
 # automation processes of Quasarzone point mining
 def main():
     login()  # 사이트 로그인 (10pt)
     main_banner()  #  메인 페이지 대형 사이드 배너(10pt)
-    attendance_check()  # 오전 9시 이후 출석체크 (10-30pt)
+    if hour >= 9:
+        attendance_check()  # 오전 9시 이후 ~ 자정 이내에만 출석체크 (10-30pt)
     hot_deal_ads()  # 지름/할인정보 우측하단 배너(0-3pt)
     build_pc_ads()  # PC조립/견적 배너(10pt)
     logout()
@@ -93,7 +101,7 @@ def main_banner():
         except UnexpectedAlertPresentException:
             print("Ahhhhhh!! please close the alert manually")
             driver.implicitly_wait(3)
-            time.sleep(1)
+            time.sleep(3)
 
 
 # hot deals ads (0 to 3 pt each)
