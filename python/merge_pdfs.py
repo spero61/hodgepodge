@@ -23,17 +23,11 @@ sorted_filenames = []
 for pdf_tuple in sorted_pdf_files:
     sorted_filenames.append(pdf_tuple[0])
 
-pdf_writer = PyPDF2.PdfFileWriter()
+# more merging options: https://pypdf2.readthedocs.io/en/latest/user/merging-pdfs.html
+pdf_merger = PyPDF2.PdfMerger()
 
-for filename in sorted_filenames:
-    pdf_file_obj = open(filename, "rb")
-    pdf_reader = PyPDF2.PdfFileReader(pdf_file_obj)
+for pdf in sorted_filenames:
+    pdf_merger.append(pdf)
 
-    # add all the pages to pdf_writer to merge pdf files in order
-    for page_num in range(0, pdf_reader.numPages):
-        page_obj = pdf_reader.getPage(page_num)
-        pdf_writer.addPage(page_obj)
-
-pdf_output = open(output_filename, "wb")
-pdf_writer.write(pdf_output)
-pdf_output.close()
+pdf_merger.write(output_filename)
+pdf_merger.close()
