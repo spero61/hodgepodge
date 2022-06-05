@@ -1,4 +1,4 @@
-import os, time, re, sys, random
+import os, time, datetime, re, sys, random
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
@@ -14,21 +14,16 @@ from selenium.common.exceptions import (
     UnexpectedAlertPresentException,
 )
 
-seconds = time.time()
-local_time = time.ctime(seconds)
-named_tuple = time.localtime()
-# convert localtime to time_string to normalize the time format
-time_string = time.strftime("%Y-%m-%d, %H:%M:%S", named_tuple)
-hour = int(f"{time_string[12]}{time_string[13]}")
+dt = datetime.datetime.now()
+hour = dt.hour  # int
 
 # automation processes of Quasarzone point mining
 def main():
     login()  # 사이트 로그인 (10pt)
-    main_banner()  #  메인 페이지 대형 사이드 배너(10pt)
     if hour >= 9:
         attendance_check()  # 오전 9시 이후 ~ 자정 이내에만 출석체크 (10-30pt)
-    hot_deal_ads()  # 지름/할인정보 우측하단 배너(0-3pt)
     build_pc_ads()  # PC조립/견적 배너(10pt)
+    hot_deal_ads()  # 지름/할인정보 우측하단 배너(0-3pt)
     logout()
 
 
@@ -61,49 +56,6 @@ def attendance_check():
     handle_alert()
 
 
-# main banner ads (10pt each)
-# need to figure out why automatic alert close does not work properly sometimes
-def main_banner():
-    driver.get("https://quasarzone.com/bbs/qn_partner")
-    ads_clicked = []
-    count = 1
-    for _ in range(random.randint(10, 25)):
-        try:
-            # page refresh to get another main banner advertisement
-            driver.refresh()
-            driver.implicitly_wait(3)
-            main_ad = driver.find_element(
-                by=By.CSS_SELECTOR,
-                value="#container > aside.logo-area.left > section > ul > li > a",
-            )
-            onclick_text = main_ad.get_attribute("onclick")
-            tmp = re.findall("[0-9]", onclick_text)
-            hashed_link = "".join(tmp)
-
-            if hashed_link in ads_clicked:
-                print(f"Same ad has detected. Skipping...: {count}")
-                count += 1
-                continue
-            ads_clicked.append(hashed_link)
-            print("Found main ad!")
-
-        except NoSuchElementException:
-            print("Google AdSence has found, skip this page")
-            continue
-
-        try:
-            main_ad.click()
-            driver.implicitly_wait(7)
-            driver.switch_to.window("main_tab")
-            handle_alert()
-            time.sleep(0.5)
-
-        except UnexpectedAlertPresentException:
-            print("Ahhhhhh!! please close the alert manually")
-            driver.implicitly_wait(3)
-            time.sleep(3)
-
-
 # hot deals ads (0 to 3 pt each)
 def hot_deal_ads():
     driver.get("https://quasarzone.com/bbs/qb_saleinfo/")
@@ -113,10 +65,11 @@ def hot_deal_ads():
 
     for elem in ad_elements:
         elem.click()
-        driver.implicitly_wait(12)
+        driver.implicitly_wait(15)
         driver.switch_to.window("main_tab")
+        driver.implicitly_wait(2)
         handle_alert()
-        time.sleep(0.5)
+        time.sleep(1.5)
 
 
 # build your PC page - sponsor ads (10pt each)
@@ -125,10 +78,11 @@ def build_pc_ads():
     sponsor_elems = driver.find_elements(by=By.CSS_SELECTOR, value=".sponsor-logo > a")
     for elem in sponsor_elems:
         elem.click()
-        driver.implicitly_wait(7)
+        driver.implicitly_wait(15)
         driver.switch_to.window("main_tab")
+        driver.implicitly_wait(3)
         handle_alert()
-        time.sleep(0.5)
+        time.sleep(2)
 
 
 # calculate points earned during this session then perform sign-out
@@ -216,4 +170,5 @@ if __name__ == "__main__":
 
     main()
 
+    time.sleep(2) # to see the result on the terminal
     driver.quit()
