@@ -36,7 +36,7 @@
 
 ## Generating monthly calendar for printing on A4
 
-- source code: [**merge_pdfs.py**](./python/merge_pdfs.py)
+- source code: [**calendar_gen.py**](./python/calendar_gen.py)
 
 - Dependencies: [openpyxl][openpyxl] - A python library to read/write Excel 2010 xlsx/xlsm files
 
@@ -47,12 +47,17 @@
 
 - Usage:  
     
-    a) Generate calendar for the current month
+    a) Generate monthly calendar for the current year (*active tab: current month*)
     ```bash
     python calendar_gen.py 
     ```
 
-    b) Generate calendar for a specific month
+    b) Generate calendar for the specific year (*active tab: January*)
+     ```bash
+    python calendar_gen.py [year]
+    ```
+
+    c) Generate calendar for the specific year (*active tab: given month*)
     ```bash
     python calendar_gen.py [year] [month]
     ```
