@@ -51,19 +51,22 @@
 <br><hr><br>
 
 ## Website Automation using Selenium 4
-- Dependencies: [Selenium 4.2.0][Selenium], [webdriver-manager 3.7.0][webdriver-manager]
+- Dependencies: [Selenium 4.3.0][Selenium], [webdriver-manager 3.7.0][webdriver-manager]
 
     ```bash
-    pip install selenium==4.2.0
+    pip install selenium==4.3.0
     pip install webdriver-manager
     ```
     _Selenium 4 will require a minimum Python 3.7 or higher_
+    
+    You should maintain your chrome browser up-to-date to match the chromedriver version with webdriver-manager.
 
 1. [**Quasarzone point mining**](./python/quasarzone.py)
-    - [퀘이사존][quasarzone] 출석체크 및 배너클릭
+    - [QuasarZone][QuasarZone] perform attendance check and clicking banners
 
 1. [**Kyobobook daily attendance**](./python/kyobobook.py)
-    - [교보문고][kyobo] 출석체크 및 보너스 스탬프
+    - [Kyobobook][Kyobobook] perform attendance check and bonus stamp
+    - webdriver setting changed from Chrome to Firefox(gecko) as of June 30, 2022 to enhance stability
 
 <br><hr><br>
 
@@ -71,5 +74,5 @@
 [PyPDF2]: https://pypdf2.readthedocs.io/en/latest/
 [Selenium]: https://www.selenium.dev/documentation/webdriver/
 [webdriver-manager]: https://pypi.org/project/webdriver-manager/
-[quasarzone]: https://quasarzone.com/
-[kyobo]: http://www.kyobobook.co.kr
+[QuasarZone]: https://quasarzone.com/
+[Kyobobook]: http://www.kyobobook.co.kr

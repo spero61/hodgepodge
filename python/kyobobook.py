@@ -1,8 +1,8 @@
-import os, random
+import os, random, time
 
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.firefox.service import Service as FirefoxService
+from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
@@ -36,40 +36,31 @@ options = webdriver.ChromeOptions()
 options.add_experimental_option("excludeSwitches", ["enable-automation"])
 options.add_experimental_option("useAutomationExtension", False)
 
-# to suppress error message of [32600:43916:0517/101436.565:ERROR:device_event_log_impl.cc(214)] [10:14:36.565] USB: usb_service_win.cc:415 Could not read device interface GUIDs
-options.add_experimental_option("excludeSwitches", ["enable-logging"])
-
-# service = ChromeService(executable_path=CHROMEDRIVER_PATH)
-service = ChromeService(executable_path=ChromeDriverManager().install())
-driver = webdriver.Chrome(service=service, options=options)
-
-# open a new tab named 'main_tab' then switch to it
-driver.execute_script("window.open('about:blank','main_tab');")
-driver.switch_to.window("main_tab")
+driver = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()))
 
 driver.get("http://www.kyobobook.co.kr")
-driver.implicitly_wait(3)
-driver.maximize_window()
+driver.implicitly_wait(10)
 
+# main page -> login page
+login_btn = driver.find_element(by=By.CSS_SELECTOR, value="#gnbLoginInfoList > li > a")
+login_btn.click()
+driver.implicitly_wait(10)
+time.sleep(1)
 
 # login page
-driver.get(
-    "http://www.kyobobook.co.kr/login/login.laf?Kc=GNHHNOlogin&orderClick=c03&retURL=http%3A//www.kyobobook.co.kr/index.laf"
-)
-driver.implicitly_wait(3)
-
 id_box = driver.find_element(by=By.NAME, value="memid")
 password_box = driver.find_element(by=By.NAME, value="pw")
-login_btn = driver.find_element(by=By.CLASS_NAME, value="btn_submit")
+submit_btn = driver.find_element(by=By.CSS_SELECTOR, value="input.btn_submit")
 
 id_box.send_keys(ID)
 password_box.send_keys(PASSWORD)
-login_btn.click()
-driver.implicitly_wait(3)
+submit_btn.click()
+driver.implicitly_wait(5)
 
 # daily attendance check
-driver.get("http://www.kyobobook.co.kr/event/dailyCheckSpci.laf?orderClick=c1j")
-driver.implicitly_wait(3)
+attendance_btn = driver.find_element(by=By.CSS_SELECTOR, value="#gnbLoginInfoList > li:nth-child(3) > a")
+attendance_btn.click()
+driver.implicitly_wait(5)
 handle_alert()
 
 # bonus stamp by choosing randomly selected answer (50% of probability)
@@ -86,11 +77,12 @@ submit_btn = driver.find_element(
 )
 submit_btn.click()
 
-driver.implicitly_wait(3)
+driver.implicitly_wait(5)
 handle_alert()
 
 driver.execute_script("logout();")
-driver.implicitly_wait(3)
+driver.implicitly_wait(7)
 
 print("successfully signed-out!")
+time.sleep(2) # to see the result on the browser
 driver.quit()
