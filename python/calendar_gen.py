@@ -2,6 +2,7 @@
 import sys
 import datetime
 import calendar
+import holidays
 import openpyxl
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Font, Alignment, Border, Side
@@ -9,6 +10,9 @@ from openpyxl.styles import Font, Alignment, Border, Side
 
 # create worksheet
 def create_month_calendar(month, year):
+
+    kr_holidays = holidays.country_holidays('KR')
+
     year_str = f"{year}" if year > 0 else f"{abs(year) + 1} BC"
 
     if month == 1:
@@ -110,10 +114,12 @@ def create_month_calendar(month, year):
         day_dict[day_list[i]] = i
 
     start_day = day_dict[first_day_str]
-    date = 1
+    current_date = 1
     for i in range(start_day, start_day + last_day_int):
-        cell_objs[i].value = date
-        date += 1
+        cell_objs[i].value = current_date
+        if datetime.date(year, month, current_date) in kr_holidays:
+            cell_objs[i].font = font_holiday
+        current_date += 1
 
     # draw default cell borders for the weekhead row
     for cell in ws["3:3"]:
