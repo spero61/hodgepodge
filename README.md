@@ -3,16 +3,25 @@
 ## Generating monthly calendar for a year in excel file(.xlsx)
 
 - source code: [**calendar_gen.py**](./python/calendar_gen.py)
-- sample output: [**calendar-2022.xlsx**](./python/examples/calendar-2022.xlsx)
+- sample outputs: [**calendar-2022-JP.xlsx**](./python/examples/calendar-2022-JP.xlsx) / [**calendar-2022-KR.xlsx**](./python/examples/calendar-2022-KR.xlsx) / [**calendar-2022-FI.xlsx**](./python/examples/calendar-2022-FI.xlsx)
 - screenshots:
 - ![calendar-screenshots](./python/examples/calendar-2023-small.gif)
 
-- Dependencies: [openpyxl 3.0.10][openpyxl] - A python library to read/write Excel 2010 xlsx/xlsm files
+- Dependencies
+    -[openpyxl 3.0.10][openpyxl] - A python library to read/write Excel 2010 xlsx/xlsm files
 
     ```bash
     pip install openpyxl
     ```
     _openpyxl is compatible to Python 3.6 or higher_
+
+    - [python-holidays][python-holidays] - A python library for determining whether a specific date is a holiday.
+
+    ```bash
+    pip install holidays
+    ```
+    _python-holidays is compatible to Python 3.7 or higher_
+
 
 - Usage:  
     
@@ -71,6 +80,7 @@
 <br><hr><br>
 
 [openpyxl]: https://openpyxl.readthedocs.io/en/stable/
+[python-holidays]: https://python-holidays.readthedocs.io/en/latest/
 [PyPDF2]: https://pypdf2.readthedocs.io/en/latest/
 [Selenium]: https://www.selenium.dev/documentation/webdriver/
 [webdriver-manager]: https://pypi.org/project/webdriver-manager/

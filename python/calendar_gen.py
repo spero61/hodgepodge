@@ -9,9 +9,9 @@ from openpyxl.styles import Font, Alignment, Border, Side
 
 
 # create worksheet
-def create_month_calendar(month, year):
+def create_month_calendar(month, year, country):
 
-    kr_holidays = holidays.country_holidays('KR')
+    country_specific_holidays = holidays.country_holidays(country)
 
     year_str = f"{year}" if year > 0 else f"{abs(year) + 1} BC"
 
@@ -117,8 +117,11 @@ def create_month_calendar(month, year):
     current_date = 1
     for i in range(start_day, start_day + last_day_int):
         cell_objs[i].value = current_date
-        if datetime.date(year, month, current_date) in kr_holidays:
+        
+        # change the color if the current date is a holiday according to country_specific_holidays
+        if datetime.date(year, month, current_date) in country_specific_holidays:
             cell_objs[i].font = font_holiday
+
         current_date += 1
 
     # draw default cell borders for the weekhead row
@@ -180,6 +183,24 @@ if __name__ == "__main__":
         month = dt.month
         active_month = month
 
+    # referring to a country by using ISO 3166-1 alpha-2 code
+    # https://python-holidays.readthedocs.io/en/latest/
+    country_codes = [None, 'FI', 'KR', 'JP']
+    country_idx = 0
+    try:
+        while country_idx < 1 or country_idx > 3:
+            country_idx = int(input('''Please specify the country you would like to generate the calendar:
+    1. Finland
+    2. Korea
+    3. Japan
+Provide the 'number'(e.g., 1, 2, or 3) then press enter.
+'''))
+    except ValueError as err:
+        print(err, "You should enter 1, 2, or 3 as an integer")
+        sys.exit(3)
+
+    country_selected = country_codes[country_idx]
+
     # color palette for months
     color_holidays = [
         "",
@@ -198,7 +219,7 @@ if __name__ == "__main__":
     ]
 
     # set output_filename (e.g., calendar-2022.xlsx)
-    output_filename = f"calendar-{year}.xlsx"
+    output_filename = f"calendar-{year}-{country_selected}.xlsx"
 
     # to set the first day of the week to Sunday (6)
     calendar.setfirstweekday(calendar.SUNDAY)
@@ -211,7 +232,7 @@ if __name__ == "__main__":
 
     # create monthly calendar for the year
     for i in range(1, 13):
-        create_month_calendar(month=i, year=year)
+        create_month_calendar(month=i, year=year, country=country_selected)
 
     # set active sheet other than January if the month argument was given
     ws_idx = active_month - 1
