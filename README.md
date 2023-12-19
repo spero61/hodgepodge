@@ -7,39 +7,42 @@
 - screenshots:
 - ![calendar-screenshots](./python/examples/calendar-2023-small.gif)
 
-- Dependencies
-    -[openpyxl 3.0.10][openpyxl] - A python library to read/write Excel 2010 xlsx/xlsm files
+- Dependencies -[openpyxl 3.0.10][openpyxl] - A python library to read/write Excel 2010 xlsx/xlsm files
 
-    ```bash
-    pip install openpyxl
-    ```
-    _openpyxl is compatible to Python 3.6 or higher_
+  ```bash
+  pip install openpyxl
+  ```
 
-    - [python-holidays][python-holidays] - A python library for determining whether a specific date is a holiday.
+  _openpyxl is compatible to Python 3.6 or higher_
 
-    ```bash
-    pip install holidays
-    ```
-    _python-holidays is compatible to Python 3.7 or higher_
+  - [python-holidays][python-holidays] - A python library for determining whether a specific date is a holiday.
 
+  ```bash
+  pip install holidays
+  ```
 
-- Usage:  
-    
-    a) Generate monthly calendar for the current year (*active tab: current month*)
-    ```bash
-    python calendar_gen.py 
-    ```
+  _python-holidays is compatible to Python 3.7 or higher_
 
-    b) Generate calendar for the specific year (*active tab: January*)
-     ```bash
-    python calendar_gen.py [year]
-    ```
+- Usage:
 
-    c) Generate calendar for the specific year (*active tab: given month*)
-    ```bash
-    python calendar_gen.py [year] [month]
-    ```
-    
+  a) Generate monthly calendar for the current year (_active tab: current month_)
+
+  ```bash
+  python calendar_gen.py
+  ```
+
+  b) Generate calendar for the specific year (_active tab: January_)
+
+  ```bash
+  python calendar_gen.py [year]
+  ```
+
+  c) Generate calendar for the specific year (_active tab: given month_)
+
+  ```bash
+  python calendar_gen.py [year] [month]
+  ```
+
 <br><hr><br>
 
 ## Merging PDF files in the current working directory
@@ -48,34 +51,56 @@
 
 - Dependencies: [PyPDF2 2.1.0][PyPDF2] - A free and open-source pure-python PDF library
 
-    ```bash
-    pip install PyPDF2
-    ```
-    _PyPDF2 is compatible to Python 3.6 or higher_
+  ```bash
+  pip install PyPDF2
+  ```
+
+  _PyPDF2 is compatible to Python 3.6 or higher_
 
 - Usage:
-    ```bash
-    python merge_pdfs.py [filename]
-    ```
+  ```bash
+  python merge_pdfs.py [filename]
+  `
+  <br><hr><br>
+  ```
+
+## Daily Report Generation Script
+
+- source code: [**daily_report_gen.py**](./python/daily_report_gen.py)
+
+- This script generates daily agenda and report markdown files from a CSV file containing task information.
+
+- Dependencies: None
+
+- Usage:
+  ```bash
+  python daily_report_gen.py [offset] [csv_file_path]
+  ```
+  - `offset`: (Optional) A numeric day offset, e.g., -1 for yesterday, 0 for today (default), 1 for tomorrow, etc.
+  - `csv_file_path`: (Optional) Path to the CSV file containing the tasks. Defaults to 'daily_report_data.csv'.
+
 <br><hr><br>
 
 ## Website Automation using Selenium 4
+
 - Dependencies: [Selenium 4.3.0][Selenium], [webdriver-manager 3.7.0][webdriver-manager]
 
-    ```bash
-    pip install selenium==4.3.0
-    pip install webdriver-manager
-    ```
-    _Selenium 4 will require a minimum Python 3.7 or higher_
-    
-    You should maintain your chrome browser up-to-date to match the chromedriver version with webdriver-manager.
+  ```bash
+  pip install selenium==4.3.0
+  pip install webdriver-manager
+  ```
+
+  _Selenium 4 will require a minimum Python 3.7 or higher_
+
+  You should maintain your chrome browser up-to-date to match the chromedriver version with webdriver-manager.
 
 1. [**Quasarzone point mining**](./python/quasarzone.py)
-    - [QuasarZone][QuasarZone] perform attendance check and clicking banners
+
+   - [QuasarZone][QuasarZone] perform attendance check and clicking banners
 
 1. [**Kyobobook daily attendance**](./python/kyobobook.py)
-    - [Kyobobook][Kyobobook] perform attendance check and bonus stamp
-    - webdriver setting changed from Chrome to Firefox(gecko) as of June 30, 2022 to enhance stability
+   - [Kyobobook][Kyobobook] perform attendance check and bonus stamp
+   - webdriver setting changed from Chrome to Firefox(gecko) as of June 30, 2022 to enhance stability
 
 <br><hr><br>
 
